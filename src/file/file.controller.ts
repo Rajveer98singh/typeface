@@ -12,6 +12,7 @@ import {
   HttpException,
   HttpStatus,
   Logger,
+  Patch,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileService } from './file.service';
@@ -56,7 +57,6 @@ export class FileController {
       const uploadedFile: FileEntity = await this.fileService.uploadFile(
         file,
         metadata,
-        false,
         file.buffer,
       );
       return { fileId: uploadedFile.id };
@@ -131,7 +131,6 @@ export class FileController {
         fileId,
         file,
         metadata,
-        false,
       );
       return { fileId: updatedFile.id };
     } catch (error) {
@@ -177,5 +176,16 @@ export class FileController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  // switch api to change useS3 variable in file.service between true and false
+  @Patch('use-s3')
+  @ApiOperation({ summary: 'Toggle useS3 variable' })
+  @ApiResponse({ status: 200, description: 'Successfully toggled useS3.' })
+  async toggleUseS3(
+    @Body('useS3') useS3: boolean,
+  ): Promise<{ useS3: boolean }> {
+    const res = await this.fileService.setUseS3(useS3);
+    return { useS3: res };
   }
 }

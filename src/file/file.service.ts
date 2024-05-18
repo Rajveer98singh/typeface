@@ -8,6 +8,7 @@ import * as fs from 'fs';
 @Injectable()
 export class FileService {
   private readonly filePath = './uploads'; // Define the local file path
+  private useS3: boolean = false;
 
   constructor(
     @InjectRepository(FileEntity)
@@ -18,7 +19,6 @@ export class FileService {
   async uploadFile(
     file: Express.Multer.File,
     metadata: any,
-    useS3: boolean,
     fileBuffer: Buffer,
   ): Promise<FileEntity> {
     const { originalname, size, mimetype } = file;
@@ -50,7 +50,7 @@ export class FileService {
       throw new Error('File buffer is undefined');
     }
 
-    if (useS3) {
+    if (this.useS3) {
       await this.awsS3Service.uploadFile(
         'your-bucket-name',
         savedFileEntity.id.toString(),
@@ -81,9 +81,7 @@ export class FileService {
       throw new Error('File not found');
     }
 
-    const useS3 = false; // Adjust this based on your logic or configuration
-
-    if (useS3) {
+    if (this.useS3) {
       return await this.awsS3Service.getFile(
         'your-bucket-name',
         fileEntity.id.toString(),
@@ -101,7 +99,6 @@ export class FileService {
     fileId: number,
     file: Express.Multer.File,
     metadata: any,
-    useS3: boolean,
   ): Promise<FileEntity> {
     const fileEntity = await this.fileRepository.findOne({
       where: { id: fileId },
@@ -124,7 +121,7 @@ export class FileService {
       throw new Error('File buffer is undefined');
     }
 
-    if (useS3) {
+    if (this.useS3) {
       await this.awsS3Service.uploadFile(
         'your-bucket-name',
         updatedFileEntity.id.toString(),
@@ -153,9 +150,7 @@ export class FileService {
       throw new Error('File not found');
     }
 
-    const useS3 = false; // Adjust this based on your logic or configuration
-
-    if (useS3) {
+    if (this.useS3) {
       await this.awsS3Service.deleteFile(
         'your-bucket-name',
         fileEntity.id.toString(),
@@ -173,5 +168,11 @@ export class FileService {
   async getFiles(): Promise<FileEntity[]> {
     return await this.fileRepository.find();
   }
-  
+
+  async setUseS3(value: boolean) {
+    console.log('setUseS3', value);
+    this.useS3 = value;
+    console.log('setUseS3', value);
+    return this.useS3;
+  }
 }
