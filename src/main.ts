@@ -1,17 +1,22 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { NestExpressApplication } from '@nestjs/platform-express';
-import * as bodyParser from 'body-parser';
-import * as multer from 'multer';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create(AppModule);
 
-  // Use Multer with in-memory storage
-  app.use(multer({ storage: multer.memoryStorage() }).any());
+  // Swagger setup
+  const config = new DocumentBuilder()
+    .setTitle('File Upload API')
+    .setDescription('API documentation for file upload service')
+    .setVersion('1.0')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
-  app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({ extended: true }));
+  // Use ValidationPipe globally
+  app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(3000);
 }

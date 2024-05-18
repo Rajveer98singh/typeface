@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { FileModule } from './file/file.module';
 import { FileEntity } from './file/file.entity'; // Adjust the path if necessary
 
@@ -27,7 +25,7 @@ import { FileEntity } from './file/file.entity'; // Adjust the path if necessary
     }),
     FileModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
