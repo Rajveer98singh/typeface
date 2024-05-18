@@ -1,0 +1,16 @@
+# docker-compose.yml
+
+version: '3'
+
+services:
+  db:
+    image: postgres
+    container_name: postgres_db
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: 'dropbox_like'
+      POSTGRES_USER: 'your_username'
+      POSTGRES_PASSWORD: 'your_password'
+    volumes:
+      - ./data:/var/lib/postgresql/data
